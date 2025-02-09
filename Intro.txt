@@ -1,0 +1,71 @@
+Zeon programming language documentation
+
+variable declaration :
+
+        let varname : value;
+
+comments :
+        ?? comments here 
+
+print statement:
+
+        print("values _escapesequence");
+        print("value"*repeatation value);
+        print("$val is here");
+
+function declaration :
+        
+        fn funcname (p1,p2,p3){
+            ?? statements here
+            return value;
+        }
+
+function call :
+
+        funcname(p1,p2,p3);
+
+conditional statements : 
+
+        if(condition){
+            ??statement here
+        }elseif(condition){
+            ??statement here
+        }else{
+            ??statement here
+        }
+
+looping statements :
+
+        while(condition){
+            ?? statements here
+            let var : var+1; ?? increment must be like redeclaration
+        }
+
+Type checking :
+
+        type varname;
+
+Type casting :
+
+        string(value);
+        int(value);
+        list(value);
+        
+using java/python code in zeon : 
+
+java ` 
+
+import java.util.*;
+
+Scanner sc = new Scanner(System.in);
+String name  = sc.nextLine();
+System.out.println("hi "+name);
+
+`
+
+python `
+
+n = input("hi enter your age : ")
+print("the user age is : "+n)
+
+`

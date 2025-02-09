@@ -1,0 +1,11 @@
+let a : 1;
+let b : "hello";
+let c : 3;
+
+let d:list(a);
+type d; 
+let f : list(b);
+type f;    
+let e : number("42");
+type e;
+print(c+e);

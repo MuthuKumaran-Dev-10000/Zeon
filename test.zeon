@@ -1,0 +1,7 @@
+let x : python {
+    s = input("Enter your name: ")
+    s = s + " says hi"
+    send : x
+}
+
+print(x); 

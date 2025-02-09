@@ -1,0 +1,21 @@
+java `
+    import java.util.*;
+    Scanner sc = new Scanner(System.in);
+    System.out.println("Enter the time");
+    int n = sc.nextInt();
+    System.out.println("Hello from Java! : "+n);
+    int fact = 1;
+    for (int i = 1; i <= n; i++) {
+        fact *= i;
+    }
+    System.out.println("Factorial of " + n + " is: " + fact);
+    
+`
+
+python `
+    s = input("please enter the input for python program : ")
+    print("Hello from Python!")
+    print("you have entered : "+s)
+`
+
+print("Hello from Zeon!");

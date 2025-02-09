@@ -1,0 +1,6 @@
+javac -d bin withrules/*.java 
+jar cvfm zeon.jar MANIFEST.MF -C bin . 
+jar tf zeon.jar | findstr META-INF/MANIFEST.MF
+jar xf zeon.jar META-INF/MANIFEST.MF
+type META-INF/MANIFEST.MF
+java -jar zeon.jar mks.zeon
