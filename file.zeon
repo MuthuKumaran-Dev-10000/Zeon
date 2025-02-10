@@ -1,0 +1,11 @@
+with ("output.txt", w) as f {
+    write(f, "Hello, Zeon!");
+    write(f, "This is a test.");
+}
+with ("fileee.txt", r) as f {
+    print(f); 
+}
+with ("output.txt", x) as f {
+    write(f, "Vannakam da mapla");
+    ??print(f);
+}

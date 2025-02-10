@@ -1,731 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zeon Programming Language Documentation</title>
-  <style>
-    /* ===== CSS Variables ===== */
-    :root {
-      --primary-100: #e8e6ff;
-      --primary-200: #c1b8ff;
-      --primary-300: #9a8bff;
-      --primary-400: #735dff;
-      --primary-500: #4c2fff;
-      --primary-600: #3d26cc;
-      --primary-700: #2e1c99;
-      --primary-800: #1f1366;
-      --primary-900: #0f0933;
-      
-      --accent-100: #e6f9ff;
-      --accent-200: #b3eeff;
-      --accent-300: #80e4ff;
-      --accent-400: #4dd9ff;
-      --accent-500: #1acfff;
-      --accent-600: #15a6cc;
-      --accent-700: #107c99;
-      --accent-800: #0a5366;
-      --accent-900: #052933;
-    
-      --success: #2ecc71;
-      --warning: #f1c40f;
-      --danger: #e74c3c;
-      --info: #3498db;
-      
-      --text-primary: #2d3436;
-      --text-secondary: #636e72;
-      --text-light: #f9f9f9;
-      
-      --bg-light: #ffffff;
-      --bg-dark: #1a1a1a;
-      
-      --radius-sm: 4px;
-      --radius-md: 8px;
-      --radius-lg: 16px;
-      
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.16);
-      --shadow-lg: 0 10px 20px rgba(0,0,0,0.19);
-      
-      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      --section-spacing: 4rem;
-    }
-    
-    /* ===== Base Styles ===== */
-    *,
-    *::before,
-    *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    html {
-      font-size: 16px;
-      scroll-behavior: smooth;
-      scroll-padding-top: 100px;
-    }
-    
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      color: var(--text-primary);
-      line-height: 1.6;
-      background-color: var(--bg-light);
-      overflow-x: hidden;
-    }
-    
-    h1, h2, h3, h4, h5, h6 {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      line-height: 1.2;
-      margin-bottom: 1.5rem;
-      color: var(--primary-800);
-    }
-    
-    h1 { font-size: 2.5rem; }
-    h2 { font-size: 2rem; }
-    h3 { font-size: 1.75rem; }
-    h4 { font-size: 1.5rem; }
-    
-    p {
-      margin-bottom: 1.5rem;
-      color: var(--text-secondary);
-    }
-    
-    a {
-      color: var(--primary-500);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-    
-    a:hover {
-      color: var(--primary-700);
-      text-decoration: underline;
-    }
-    
-    /* ===== Layout Utilities ===== */
-    .container {
-      width: 100%;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-    
-    .section {
-      padding: var(--section-spacing) 0;
-    }
-    
-    .grid {
-      display: grid;
-      gap: 2rem;
-    }
-    
-    .flex {
-      display: flex;
-      gap: 1rem;
-    }
-    
-    /* ===== Header Styles ===== */
-    header {
-      background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
-      color: var(--text-light);
-      padding: 6rem 0;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.1) 100%);
-      pointer-events: none;
-    }
-    
-    .header-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    .header-content h1 {
-      font-size: 3rem;
-      margin-bottom: 1.5rem;
-      color: var(--text-light);
-      text-shadow: var(--shadow-md);
-    }
-    
-    .header-content p {
-      font-size: 1.25rem;
-      color: var(--primary-100);
-      margin-bottom: 2rem;
-    }
-    
-    /* ===== Download Button ===== */
-    .download-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 1rem 2rem;
-      background: linear-gradient(45deg, var(--accent-500), var(--accent-700));
-      color: var(--text-light);
-      border-radius: var(--radius-md);
-      font-weight: 600;
-      transition: var(--transition);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .download-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-lg);
-      text-decoration: none;
-    }
-    
-    .download-btn:active {
-      transform: translateY(0);
-    }
-    
-    .download-btn::after {
-      content: '↓';
-      font-size: 1.2em;
-    }
-    
-    /* ===== Documentation Content ===== */
-    .docs-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 3rem;
-      padding: 2rem 0;
-    }
-    
-    /* ===== Table of Contents ===== */
-    .toc {
-      position: sticky;
-      top: 100px;
-      align-self: start;
-      padding: 1.5rem;
-      background: var(--bg-light);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-sm);
-    }
-    
-    .toc h3 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      color: var(--primary-700);
-    }
-    
-    .toc ul {
-      list-style: none;
-    }
-    
-    .toc li {
-      margin-bottom: 0.75rem;
-    }
-    
-    .toc a {
-      color: var(--text-secondary);
-      padding: 0.5rem;
-      border-radius: var(--radius-sm);
-      display: block;
-    }
-    
-    .toc a:hover {
-      background: var(--primary-100);
-      color: var(--primary-600);
-    }
-    
-    /* ===== Code Blocks ===== */
-    pre {
-      position: relative;
-      background: var(--primary-900);
-      color: var(--text-light);
-      padding: 2rem !important;
-      border-radius: var(--radius-md);
-      margin: 1.5rem 0;
-      overflow-x: auto;
-      box-shadow: var(--shadow-md);
-    }
-    
-    pre::before {
-      content: 'Zeon';
-      position: absolute;
-      top: 0;
-      left: 0;
-      padding: 0.5rem 1rem;
-      background: var(--primary-700);
-      color: var(--text-light);
-      font-size: 0.875rem;
-      border-radius: var(--radius-md) 0 var(--radius-md) 0;
-    }
-    
-    code {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-    
-    .copy-code {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: rgba(255,255,255,0.1);
-      color: var(--text-light);
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    
-    .copy-code:hover {
-      background: var(--accent-500);
-    }
-    
-    /* ===== Interactive Elements ===== */
-    details {
-      margin: 1.5rem 0;
-      border: 1px solid var(--primary-100);
-      border-radius: var(--radius-md);
-      transition: var(--transition);
-    }
-    
-    details[open] {
-      box-shadow: var(--shadow-sm);
-    }
-    
-    summary {
-      padding: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--primary-50);
-      border-radius: var(--radius-md);
-    }
-    
-    details[open] summary {
-      border-radius: var(--radius-md) var(--radius-md) 0 0;
-    }
-    
-    /* ===== Syntax Highlighting ===== */
-    .keyword { color: var(--accent-400); }
-    .function { color: var(--primary-300); }
-    .string { color: var(--success); }
-    .comment { color: var(--text-secondary); }
-    .operator { color: var(--warning); }
-    
-    /* ===== Feature Cards ===== */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin: 2rem 0;
-    }
-    
-    .feature-card {
-      padding: 2rem;
-      background: var(--bg-light);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--primary-100);
-      transition: var(--transition);
-    }
-    
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-md);
-    }
-    
-    .feature-icon {
-      font-size: 2rem;
-      color: var(--primary-500);
-      margin-bottom: 1rem;
-    }
-    
-    /* ===== Footer Styles ===== */
-    footer {
-      background: var(--primary-900);
-      color: var(--text-light);
-      padding: 2rem 0;
-      margin-top: var(--section-spacing);
-    }
-    
-    .footer-content {
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    
-    /* ===== Dark Mode ===== */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --text-primary: #f9f9f9;
-        --text-secondary: #b2bec3;
-        --bg-light: #2d3436;
-        --bg-dark: #1a1a1a;
-      }
-      
-      body {
-        background: var(--bg-dark);
-      }
-      
-      .feature-card {
-        background: rgba(255,255,255,0.05);
-        border-color: rgba(255,255,255,0.1);
-      }
-    }
-    
-    /* ===== Responsive Design ===== */
-    @media (max-width: 1024px) {
-      .docs-container {
-        grid-template-columns: 1fr;
-      }
-      
-      .toc {
-        position: static;
-        order: -1;
-      }
-    }
-    
-    @media (max-width: 768px) {
-      html {
-        font-size: 14px;
-      }
-      
-      .container {
-        padding: 0 1.5rem;
-      }
-      
-      header {
-        padding: 4rem 0;
-      }
-      
-      .header-content h1 {
-        font-size: 2rem;
-      }
-    }
-    
-    /* ===== Animations ===== */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-    
-    .animate-fadein {
-      animation: fadeIn 0.6s ease-out;
-    }
-    
-    .animate-float {
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    /* ===== Utility Classes ===== */
-    .mb-0 { margin-bottom: 0; }
-    .mb-2 { margin-bottom: 0.5rem; }
-    .mb-4 { margin-bottom: 1rem; }
-    .mb-6 { margin-bottom: 1.5rem; }
-    .mb-8 { margin-bottom: 2rem; }
-    
-    .text-center { text-align: center; }
-    .text-accent { color: var(--accent-500); }
-    
-    .shadow-sm { box-shadow: var(--shadow-sm); }
-    .shadow-md { box-shadow: var(--shadow-md); }
-    
-    .rounded { border-radius: var(--radius-md); }
-    
-    /* ===== Scrollbar ===== */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: var(--primary-100);
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: var(--primary-300);
-      border-radius: var(--radius-md);
-    }
-    
-    /* ===== Print Styles ===== */
-    @media print {
-      .toc, .download-btn {
-        display: none;
-      }
-      
-      pre {
-        page-break-inside: avoid;
-      }
-    }
-    
-    /* ===== Additional Enhancements ===== */
-    .highlight {
-      position: relative;
-      padding-left: 1rem;
-      border-left: 4px solid var(--primary-500);
-      background: var(--primary-50);
-      margin: 1.5rem 0;
-      border-radius: var(--radius-sm);
-    }
-    
-    .badge {
-      display: inline-block;
-      padding: 0.25rem 0.75rem;
-      background: var(--accent-500);
-      color: var(--text-light);
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-    
-    .tooltip {
-      position: relative;
-      border-bottom: 1px dotted var(--text-secondary);
-    }
-    
-    .tooltip-text {
-      visibility: hidden;
-      position: absolute;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary-900);
-      color: var(--text-light);
-      padding: 0.5rem 1rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      white-space: nowrap;
-      opacity: 0;
-      transition: var(--transition);
-    }
-    
-    .tooltip:hover .tooltip-text {
-      visibility: visible;
-      opacity: 1;
-    }
-    
-    /* ===== Interactive List ===== */
-    .feature-list {
-      counter-reset: feature-counter;
-    }
-    
-    .feature-list li {
-      counter-increment: feature-counter;
-      padding-left: 2.5rem;
-      position: relative;
-      margin-bottom: 1rem;
-    }
-    
-    .feature-list li::before {
-      content: counter(feature-counter);
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 2rem;
-      height: 2rem;
-      background: var(--primary-500);
-      color: var(--text-light);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-    }
-    
-    /* ===== Status Indicators ===== */
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: var(--radius-full);
-      font-size: 0.875rem;
-    }
-    
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    
-    .status-stable .status-dot { background: var(--success); }
-    .status-beta .status-dot { background: var(--warning); }
-    .status-deprecated .status-dot { background: var(--danger); }
-    
-    /* ===== Keyboard Input ===== */
-    kbd {
-      background: var(--primary-100);
-      color: var(--primary-700);
-      padding: 0.25rem 0.5rem;
-      border-radius: var(--radius-sm);
-      font-family: monospace;
-      box-shadow: inset 0 -2px 0 var(--primary-200);
-    }
-    
-    /* ===== Section Dividers ===== */
-    .section-divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, var(--primary-300) 50%, transparent 100%);
-      margin: var(--section-spacing) 0;
-    }
-    
-    /* ===== Version History Table ===== */
-    .version-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 2rem 0;
-    }
-    
-    .version-table th,
-    .version-table td {
-      padding: 1rem;
-      text-align: left;
-      border-bottom: 1px solid var(--primary-100);
-    }
-    
-    .version-table th {
-      background: var(--primary-50);
-      color: var(--primary-700);
-    }
-    
-    .version-table tr:hover {
-      background: var(--primary-50);
-    }
-    
-    /* ===== Custom Checkbox ===== */
-    .checkbox-group {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-    
-    .checkbox-input {
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border: 2px solid var(--primary-300);
-      border-radius: var(--radius-sm);
-      position: relative;
-      cursor: pointer;
-    }
-    
-    .checkbox-input:checked {
-      background: var(--primary-500);
-      border-color: var(--primary-500);
-    }
-    
-    .checkbox-input:checked::after {
-      content: '✓';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: var(--text-light);
-      font-size: 0.875rem;
-    }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeon Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function copyToClipboard() {
+            const codeBlock = document.getElementById("code-block");
+            navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+    </script>
 </head>
-<body>
-  <header>
-    <h1>Zeon Programming Language Documentation 📄✨</h1>
-    <p>Welcome to the official documentation for the Zeon Programming Language! 🚀</p>
-    <a href="#" class="download-btn">Download Zeon Compiler (.exe)</a>
-  </header>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <header class="text-center py-6">
+            <h1 class="text-4xl font-bold text-blue-400">Zeon Programming Language</h1>
+            <p class="text-gray-400 text-lg">A Modern, Lightweight, and Intuitive Programming Language</p>
+            <a href="zeon_setup.exe" download class="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500">Download Zeon</a>
+        </header>
+        
+        <section class="mt-8 bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-blue-300">Syntax & Documentation</h2>
+            <p class="text-gray-400 mt-2">Below is the syntax guide for Zeon. Click the button to copy the code snippets.</p>
+            <button onclick="copyToClipboard()" class="mt-4 bg-green-600 px-4 py-2 rounded-lg hover:bg-green-500">Copy Code</button>
+            <pre id="code-block" class="bg-gray-700 p-4 rounded-lg mt-4 overflow-x-auto text-sm">
+<strong class="text-blue-400">Variable Declaration:</strong>
+let varname : value;
 
-  <div class="container">
-    <h2>Introduction to Zeon 🌟</h2>
-    <p>Zeon is a <strong>high-level programming language</strong> designed for <strong>easy coding</strong>, <strong>interoperability</strong>, and <strong>rapid development</strong>. It combines the simplicity of scripting languages with the power of modern programming paradigms. Zeon supports <strong>interoperability</strong> with languages like <strong>Java</strong> and <strong>Python</strong>, making it a versatile choice for developers. Additionally, Zeon integrates seamlessly with <strong>HTML</strong> for mobile app development, enabling you to create stunning user interfaces with ease. 🎨</p>
+<strong class="text-blue-400">Comments:</strong>
+?? comments here 
 
-    <h2>Syntax Overview 🖋️</h2>
-    <p>Zeon's syntax is clean, intuitive, and easy to learn. Here's a quick overview of the key syntax elements:</p>
-    <pre><code>let x : 10; // Declares a variable x with value 10
-print("Hello, Zeon!"); // Prints to the console
-if (x > 10) {
-    print("x is greater than 10");
-}</code></pre>
+<strong class="text-blue-400">List:</strong>
+let varname : [1,2,3,4];
 
-    <h2>Variables and Data Types 🧱</h2>
-    <p>Zeon supports the following data types:</p>
-    <ul>
-      <li><strong>Numbers</strong>: <code>let age : 25;</code></li>
-      <li><strong>Strings</strong>: <code>let name : "Zeon";</code></li>
-      <li><strong>Booleans</strong>: <code>let isActive : true;</code></li>
-      <li><strong>Lists</strong>: <code>let numbers : [1, 2, 3];</code></li>
-      <li><strong>Maps</strong>: <code>let person : {"name": "Zeon", "age": 25};</code></li>
-    </ul>
+<strong class="text-blue-400">Dictionary:</strong>
+let varname : {key:val};
 
-    <h2>Control Structures 🎛️</h2>
-    <p>Zeon provides familiar control structures for decision-making and looping:</p>
-    <pre><code>if (x > 10) {
-    print("x is greater than 10");
-} elseif (x == 10) {
-    print("x is equal to 10");
+<strong class="text-blue-400">Print Statement:</strong>
+print("values _escapesequence");
+print("value"*repeatation value);
+print("$val is here");
+
+<strong class="text-blue-400">Function Declaration:</strong>
+fn funcname (p1,p2,p3){
+    ?? statements here
+    return value;
+}
+
+<strong class="text-blue-400">Function Call:</strong>
+funcname(p1,p2,p3);
+
+<strong class="text-blue-400">Conditional Statements:</strong>
+if(condition){
+    ??statement here
+} elseif(condition){
+    ??statement here
 } else {
-    print("x is less than 10");
-}</code></pre>
+    ??statement here
+}
 
-    <h2>Functions 🛠️</h2>
-    <p>Functions in Zeon are declared using the <code>fn</code> keyword:</p>
-    <pre><code>fn greet(name) {
-    print("Hello, ", name, "!_n");
-}</code></pre>
+<strong class="text-blue-400">Looping Statements:</strong>
+while(condition){
+    ?? statements here
+    let var : var+1;
+}
+for(let i : 0, i <= 5, let i : i + 1) {
+    print(i+"_n");
+}
 
-    <h2>Escape Sequences 🎨</h2>
-    <p>Zeon's escape sequences make it easy to format and style text output:</p>
-    <pre><code>print("_bold _underline Welcome to Zeon!_n");
-print("_green This is green text._n");</code></pre>
+<strong class="text-blue-400">Type Checking & Casting:</strong>
+type varname;
+string(value);
+int(value);
+list(value);
 
-    <h2>Interoperability 🤝</h2>
-    <p>Zeon is designed to work seamlessly with other programming languages like <strong>Java</strong> and <strong>Python</strong>:</p>
-    <pre><code>java {
-    System.out.println("Hello from Java!");
-}</code></pre>
+<strong class="text-blue-400">Using Java/Python Code in Zeon:</strong>
+java `
+import java.util.*;
+Scanner sc = new Scanner(System.in);
+String name  = sc.nextLine();
+System.out.println("hi "+name);
+`
 
-    <h2>HTML Integration for Mobile App Development 📱</h2>
-    <p>Zeon makes it easy to develop mobile apps by integrating with <strong>HTML</strong>:</p>
-    <pre><code>html {
-    &lt;!DOCTYPE html&gt;
-    &lt;html&gt;
-    &lt;head&gt;
-        &lt;title&gt;Zeon Mobile App&lt;/title&gt;
-    &lt;/head&gt;
-    &lt;body&gt;
-        &lt;h1&gt;Welcome to Zeon!&lt;/h1&gt;
-    &lt;/body&gt;
-    &lt;/html&gt;
-}</code></pre>
+python `
+n = input("hi enter your age : ")
+print("the user age is : "+n)
+`
 
-    <h2>Examples 🚀</h2>
-    <p>Here are some examples to get you started:</p>
-    <pre><code>print("_blue Hello, _bold World!_n");
+<strong class="text-blue-400">File Handling:</strong>
+with ("filename.txt", w) as VAR {
+    write(VAR, "Hello, Zeon!");
+    write(VAR, "This is a test.");
+}
+with ("filename.txt", r) as VAR {
+    print(VAR);
+}
 
-fn fibonacci(n) {
-    let a : 0;
-    let b : 1;
-    while (n > 0) {
-        print(a, " ");
-        let temp : a;
-        let a : b;
-        let b : temp + b;
-        let n : n - 1;
+<strong class="text-blue-400">Exception Handling:</strong>
+try {
+    ??statements
+} catch(e) {
+    print(e);
+    print("_n");
+} finally {
+    print("This will always execute._n");
+}
+
+<strong class="text-blue-400">Switch Statement:</strong>
+let num : 2;
+switch(num) {
+    case 1 {
+        print("One");
     }
-}</code></pre>
-
-    <h2>Conclusion 🎉</h2>
-    <p>Zeon is a powerful, modern programming language designed for <strong>simplicity</strong>, <strong>interoperability</strong>, and <strong>rapid development</strong>. With its clean syntax, rich features, and seamless integration with other languages and HTML, Zeon is the perfect choice for developers of all skill levels. Start coding in Zeon today and unlock a world of possibilities! 🌍</p>
-  </div>
-
-  <footer>
-    <p>Happy Coding with Zeon! 🚀👩‍💻👨‍💻</p>
-  </footer>
+    case 2 {
+        print("Two");
+    }
+    case 3 {
+        print("Three");
+    }
+    default {
+        print("Not 1, 2, or 3");
+    }
+}
+            </pre>
+        </section>
+    </div>
 </body>
 </html>

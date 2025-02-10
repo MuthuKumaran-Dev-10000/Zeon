@@ -1,0 +1,17 @@
+let num : 2;
+
+switch(num) {
+    case 1 {
+        print("One");
+    }
+    case 2 {
+        print("Two");
+    }
+    case 3 {
+        print("Three");
+    }
+    default {
+        print("Not 1, 2, or 3");
+    }
+}
+print("_nprogram ended");

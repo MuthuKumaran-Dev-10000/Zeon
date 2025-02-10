@@ -5,7 +5,16 @@ variable declaration :
         let varname : value;
 
 comments :
+        
         ?? comments here 
+
+list : 
+
+        let varname : [1,2,3,4];
+
+dictionary :
+
+        let varname : {key:val};
 
 print statement:
 
@@ -41,6 +50,10 @@ looping statements :
             let var : var+1; ?? increment must be like redeclaration
         }
 
+        for(let i : 0, i <= 5, let i : i + 1) {
+                print(i+"_n");
+        }
+
 Type checking :
 
         type varname;
@@ -69,3 +82,42 @@ n = input("hi enter your age : ")
 print("the user age is : "+n)
 
 `
+FileHandiling : 
+
+with ("filename.txt", w) as VAR {
+    write(VAR, "Hello, Zeon!");
+    write(VAR, "This is a test.");
+}
+with ("filename.txt", r) as VAR {
+    print(VAR); 
+}
+
+Exception handling Try Catch :
+
+try {
+    ??statements
+} catch(e) {
+    print(e); 
+    print("_n");
+} finally {
+    print("This will always execute._n");
+}
+
+Switch statement : (unfortunately expressions is not added currently)
+
+let num : 2;
+
+switch(num) {
+    case 1 {
+        print("One");
+    }
+    case 2 {
+        print("Two");
+    }
+    case 3 {
+        print("Three");
+    }
+    default {
+        print("Not 1, 2, or 3");
+    }
+}

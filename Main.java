@@ -1,37 +1,25 @@
-public class Main {
-    public static void greet(String color, int min, int sec) {
-        
-        System.out.println(color + " Hello, (min: " + min + ", sec: " + sec + ") Zeon!");
-        
-        // This is a comment
-        
-        System.out.print("The value of min+sec is: ");
-        System.out.println(min + sec);
-        
-        int i = min;
-        int j = sec;
-        
-        while (min <= sec) {
-            while (i <= j) {
-                System.out.print(i + " ");
-                i++;
-            }
-            System.out.println();
-            min++;
-            i = min;
-            j = sec;
-        }
+import java.util.*;
 
-        
+public class Main {
+    public static void fibonacci(int n) {
+        int a = 0, b = 1;
+        while (n > 0) {
+            System.out.print(a + " ");
+            int temp = a;
+            a = b;
+            b = temp + b;
+            n--;
+        }
+        System.out.println();
     }
 
     public static void main(String[] args) {
-        long startTime = System.currentTimeMillis(); // Start time measurement
+        long startTime = System.nanoTime(); // Start timer
 
-        greet("_blue hi guys", 1, 5);
-        greet("_red", 1, 8);
-        long endTime = System.currentTimeMillis(); // End time measurement
-        long executionTime = endTime - startTime; // Calculate execution time
-        System.out.println("Execution time: " + executionTime + " ms");
+        fibonacci(10); // Run Fibonacci
+
+        long endTime = System.nanoTime(); // End timer
+        double executionTime = (endTime - startTime) / 1_000_000.0; // Convert to milliseconds
+        System.out.printf("Execution Time (Java): %.6f ms\n", executionTime);
     }
 }

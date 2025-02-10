@@ -17,5 +17,5 @@ python `
     print("Hello from Python!")
     print("you have entered : "+s)
 `
-
-print("Hello from Zeon!");
+let y : input("hi enter your name : ");
+print("Hello from Zeon!"+y);

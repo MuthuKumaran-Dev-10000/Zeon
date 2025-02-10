@@ -1,20 +1,19 @@
 import time
 
-def greet(color, min_val, sec):
-    while min_val < sec:
-        print(f"{color} Hello, Zeon! _reset")
-        min_val = 3  # Simulating the reassignment in Zeon
+def fibonacci(n):
+    a, b = 0, 1
+    while n > 0:
+        print(a, end=" ")
+        temp = a
+        a = b
+        b = temp + b
+        n -= 1
+    print()
 
-    print(min_val + sec)
 
-# Start timer
-start_time = time.time()
-
-# Execute functions
-greet("_blue hi guys", 1, 2)
-greet("_red", 1, 3)
-
-# End timer and print execution time in milliseconds
-end_time = time.time()
-execution_time = (end_time - start_time) * 1000  # Convert to milliseconds
-print(f"Execution Time: {execution_time:.2f} ms")
+start_time = time.perf_counter()
+fibonacci(10)
+end_time = time.perf_counter()
+x = (10+5)+2/5
+print(x)
+print(f"Execution Time (Python): {end_time - start_time:.10f} seconds")

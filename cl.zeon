@@ -1,0 +1,16 @@
+class Car {
+    let model = null;
+    let year = null;
+
+    Car(model, year) {
+        this.model = model;
+        this.year = year;
+    }
+
+    fn honk() {
+        print("Boink!");
+    }
+}
+
+let myCar : Car("Tesla", 2023);
+myCar.honk();
