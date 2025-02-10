@@ -95,13 +95,24 @@ public class Lexer {
                 return new Token(TokenType.IF, value);
             case "type":
                 return new Token(TokenType.TYPE, value);
-            
+            case "with": return new Token(TokenType.WITH, value);
+            case "as": return new Token(TokenType.AS, value);
+            case "write": return new Token(TokenType.WRITE, value);
+            case "switch":
+                return new Token(TokenType.SWITCH, value);
+            case "case":
+                return new Token(TokenType.CASE, value);
+            case "default":
+                return new Token(TokenType.DEFAULT, value);
+
+            case "r": case "w": case "x": return new Token(TokenType.FILE_MODE, value);
             case "else":
                 return new Token(TokenType.ELSE, value);
             case "elseif":
                 return new Token(TokenType.ELSE_IF, value);
             case "for":
                 return new Token(TokenType.FOR, value);
+            
             case "[":
                 return new Token(TokenType.LIST_OPEN, "[");
                 
@@ -132,11 +143,23 @@ public class Lexer {
                 return new Token(TokenType.CAST_NUMBER, value);
             case "float":
                 return new Token(TokenType.CAST_FLOAT, value);
-                case "java":
+            case "java":
                 return tokenizeCodeBlock(TokenType.JAVA_BLOCK);
+            case "class":
+                return new Token(TokenType.CLASS, value);
+            case "this": 
+                return new Token(TokenType.THIS, value);
+            case "new":
+                return new Token(TokenType.NEW, value);
             case "python":
                 return tokenizeCodeBlock(TokenType.PYTHON_BLOCK);
             
+            case "try": 
+                return new Token(TokenType.TRY, value);
+            case "catch": 
+                return new Token(TokenType.CATCH, value);
+            case "finally": 
+                return new Token(TokenType.FINALLY, value);
             
             
             case "true":
@@ -218,7 +241,10 @@ if (type.name().equals("java_block")) {
     private Token tokenizeOperator() {
         char currentChar = input.charAt(position);
         
-        
+        if (currentChar == '.') {
+            position++;
+            return new Token(TokenType.DOT, ".");
+        }
         
         
         

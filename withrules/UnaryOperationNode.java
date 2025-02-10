@@ -48,12 +48,20 @@ class FunctionDefinitionNode extends Node {
 class FunctionCallNode extends Node {
     private String functionName;
     private List<Node> arguments;
-
+    private String objectName;
     public FunctionCallNode(String functionName, List<Node> arguments) {
         this.functionName = functionName;
         this.arguments = arguments;
+        this.objectName = null;
     }
-
+    public FunctionCallNode(String objectName, String functionName, List<Node> arguments) {
+        this.objectName = objectName;
+        this.functionName = functionName;
+        this.arguments = arguments;
+    }
+    public String getObject() {  // This method was missing!
+        return objectName;
+    }
     public String getFunctionName() {
         return functionName;
     }
@@ -101,6 +109,7 @@ class FloatNode extends Node {
         return "FloatNode{" + "value=" + value + '}';
     }
 }
+
 class ListNode extends Node {
     private List<Node> elements;
 
@@ -216,21 +225,20 @@ class DictNode extends Node {
         return "DictNode{" + "pairs=" + pairs + '}';
     }
 }
-
-class ForLoopNode extends Node {
-    private Node initialization;
+ class ForLoopNode extends Node {
+    private VariableDeclarationNode initialization;
     private Node condition;
-    private Node update;
+    private VariableDeclarationNode increment;
     private BlockNode body;
 
-    public ForLoopNode(Node initialization, Node condition, Node update, BlockNode body) {
+    public ForLoopNode(VariableDeclarationNode initialization, Node condition, VariableDeclarationNode increment, BlockNode body) {
         this.initialization = initialization;
         this.condition = condition;
-        this.update = update;
+        this.increment = increment;
         this.body = body;
     }
 
-    public Node getInitialization() {
+    public VariableDeclarationNode getInitialization() {
         return initialization;
     }
 
@@ -238,17 +246,12 @@ class ForLoopNode extends Node {
         return condition;
     }
 
-    public Node getUpdate() {
-        return update;
+    public VariableDeclarationNode getIncrement() {
+        return increment;
     }
 
     public BlockNode getBody() {
         return body;
-    }
-
-    @Override
-    public String toString() {
-        return "ForLoopNode{" + "initialization=" + initialization + ", condition=" + condition + ", update=" + update + ", body=" + body + '}';
     }
 }
 
@@ -375,6 +378,34 @@ class ReturnNode extends Node {
 
 
 
+class SwitchNode extends Node {
+    private Node switchExpression;
+    private List<CaseNode> cases;
+    private Node defaultCase;
+
+    public SwitchNode(Node switchExpression, List<CaseNode> cases, Node defaultCase) {
+        this.switchExpression = switchExpression;
+        this.cases = cases;
+        this.defaultCase = defaultCase;
+    }
+
+    public Node getSwitchExpression() { return switchExpression; }
+    public List<CaseNode> getCases() { return cases; }
+    public Node getDefaultCase() { return defaultCase; }
+}
+
+class CaseNode extends Node {
+    private Node caseValue;
+    private Node caseBody;
+
+    public CaseNode(Node caseValue, Node caseBody) {
+        this.caseValue = caseValue;
+        this.caseBody = caseBody;
+    }
+
+    public Node getCaseValue() { return caseValue; }
+    public Node getCaseBody() { return caseBody; }
+}
 
 
 

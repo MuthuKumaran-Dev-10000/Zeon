@@ -232,7 +232,7 @@ public class Main {
         
         boolean compileOnly = args.length == 2 && args[0].equals("-c");
         String fileName = compileOnly ? args[1].trim() : args[0].trim();
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         
         try {
             File file = new File(fileName);
@@ -273,8 +273,9 @@ public class Main {
             System.exit(1);
         }
         
-        long endTime = System.currentTimeMillis();
-        System.out.println("Execution time: " + (endTime - startTime) + " ms");
+        long endTime = System.nanoTime(); // End timer
+        double executionTime = (endTime - startTime) / 1_000_000.0; // Convert to milliseconds
+        System.out.printf("Execution Time : %.6f ms\n", executionTime);
     }
     private static String getCodeFromFile(String fileName) {
         StringBuilder codeBuilder = new StringBuilder();

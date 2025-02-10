@@ -1,6 +1,11 @@
 package withrules;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.logging.FileHandler;
 
 public class Interpreter {
     private final Node ast;
@@ -25,7 +31,22 @@ public class Interpreter {
         public Object interpret() {
             return interpretNode(ast);
         }
-    
+        private Object interpretTryCatchNode(TryCatchNode node) {
+            try {
+                return interpretBlockNode(node.getTryBlock());
+            } catch (Exception e) {
+                if (node.getCatchBlock() != null) {
+                    variables.put(node.getExceptionVariable(), e.getMessage());
+                    return interpretBlockNode(node.getCatchBlock());
+                }
+            } finally {
+                if (node.getFinallyBlock() != null) {
+                    interpretBlockNode(node.getFinallyBlock());
+                }
+            }
+            return null;
+        }
+        
         private Object interpretIfElseNode(IfElseNode node) {
             
             Object condition = interpretNode(node.getCondition());
@@ -126,6 +147,8 @@ private Object interpretTypeNode(TypeNode node) {
     
     return null; 
 }
+
+
 private Object interpretTypeCastNode(TypeCastNode node) {
     Object value = interpretNode(node.getValue());
 
@@ -243,11 +266,166 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
     throw new RuntimeException("Unknown code block type: " + node.getBlockType());
 }
 
+        private Object interpretFileHandlingNode(FileHandlingNode node) {
+    String fileName = interpretNode(node.getFileName()).toString();
+    String mode = node.getMode();
+    String fileVar = node.getFileVariable();
+
+    try {
+        File file = new File(fileName);
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        if (mode.equals("r")) {
+            if (!file.exists()) throw new RuntimeException("File not found: " + fileName);
+            reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            variables.put(fileVar, content.toString().trim());
+            reader.close();
+        } else if (mode.equals("w")) {
+            writer = new BufferedWriter(new FileWriter(file, false));
+            variables.put(fileVar, writer);
+        } else if (mode.equals("x")) {
+            if (!file.exists()) throw new RuntimeException("File not found: " + fileName);
+            reader = new BufferedReader(new FileReader(file));
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            variables.put(fileVar, content.toString().trim());
+            writer = new BufferedWriter(new FileWriter(file, true));
+            variables.put(fileVar + "_writer", writer);
+            reader.close();
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("File error: " + e.getMessage());
+    }
+
+    return null;
+}
+
+private Object interpretWriteFunction(FunctionCallNode node) {
+    if (node.getArguments().size() != 2) {
+        throw new RuntimeException("write() requires 2 arguments: file variable and content.");
+    }
+
+    Object fileObject = interpretNode(node.getArguments().get(0));
+    Object content = interpretNode(node.getArguments().get(1));
+
+    if (fileObject instanceof BufferedWriter) {
+        try {
+            ((BufferedWriter) fileObject).write(content.toString());
+            ((BufferedWriter) fileObject).newLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing to file: " + e.getMessage());
+        }
+    } else if (fileObject instanceof FileHandlerr) {
+        try {
+            ((FileHandlerr) fileObject).getWriter().write(content.toString());
+            ((FileHandlerr) fileObject).getWriter().newLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing to file: " + e.getMessage());
+        }
+    } else {
+        throw new RuntimeException("Invalid file object for write()");
+    }
+
+    return null;
+}
+private Object interpretWithNode(WithNode node) {
+    Node fileNameNode = node.getFileName();
+    String mode = node.getMode();  // ✅ Already a string, no need for interpretNode()
+
+    String fileName = interpretNode(fileNameNode).toString();  // ✅ Ensure fileName is a valid string
+
+    try {
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        switch (mode) {
+            case "r":
+                reader = new BufferedReader(new FileReader(fileName));
+                break;
+            case "w":
+                writer = new BufferedWriter(new FileWriter(fileName, false));
+                break;
+            case "x":
+                // reader = new BufferedReader(new FileReader(fileName));
+                writer = new BufferedWriter(new FileWriter(fileName, true));
+                break;
+            default:
+                throw new RuntimeException("Invalid file mode: " + mode);
+        }
+
+        // ✅ Using FileHandlerr to avoid conflicts with Java's FileHandler
+        FileHandlerr fileHandler = new FileHandlerr(reader, writer);
+        variables.put(node.getVariableName(), fileHandler);
+
+        return interpretBlockNode(node.getBody());  // ✅ Execute block inside `with`
+        
+    } catch (IOException e) {
+        throw new RuntimeException("File handling error: " + e.getMessage());
+    }
+}
+
+
+private Object interpretWriteNode(WriteNode node) {
+    Object fileObject = interpretNode(node.getFileVariable());
+    Object content = interpretNode(node.getContent());
+
+    if (!(fileObject instanceof FileHandlerr)) {
+        throw new RuntimeException("Invalid file variable: " + fileObject);
+    }
+
+    FileHandlerr fileHandler = (FileHandlerr) fileObject;
+    try {
+        fileHandler.getWriter().write(content.toString());
+        fileHandler.getWriter().newLine();
+        fileHandler.getWriter().flush();  // Ensure content is written immediately
+    } catch (IOException e) {
+        throw new RuntimeException("Error writing to file: " + e.getMessage());
+    }
+    return null;
+}
+
+private Object interpretSwitchNode(SwitchNode node) {
+    Object switchValue = interpretNode(node.getSwitchExpression());
+
+    // 🔹 Check cases
+    for (CaseNode caseNode : node.getCases()) {
+        Object caseValue = interpretNode(caseNode.getCaseValue());
+        if (switchValue.equals(caseValue)) {
+            return interpretNode(caseNode.getCaseBody()); // ✅ Execute case
+        }
+    }
+
+    // 🔹 Execute default case if no match
+    if (node.getDefaultCase() != null) {
+        return interpretNode(node.getDefaultCase());
+    }
+
+    return null; // If no match and no default, do nothing
+}
 
 
         private Object interpretNode(Node node) {
             if (node instanceof BlockNode) {
                 return interpretBlockNode((BlockNode) node);
+            }
+            if (node instanceof FileHandlingNode) {
+                return interpretFileHandlingNode((FileHandlingNode) node);
+            }
+            if (node instanceof SwitchNode) {
+    return interpretSwitchNode((SwitchNode) node);
+}
+
+            if (node instanceof TryCatchNode) {
+                return interpretTryCatchNode((TryCatchNode) node);
             }
             if (node instanceof FloatNode) {
                 return ((FloatNode) node).getValue();
@@ -259,11 +437,41 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
                 return interpretTypeCastNode((TypeCastNode) node);
             }
             if (node instanceof CodeBlockNode) {
-    return interpretCodeBlockNode((CodeBlockNode) node);
-}
-
+                return interpretCodeBlockNode((CodeBlockNode) node);
+            }
+            if (node instanceof WithNode) {
+                return interpretWithNode((WithNode) node);
+            }
+            if (node instanceof WriteNode) {
+                return interpretWriteNode((WriteNode) node);
+            }
             
-            
+            if (node instanceof VariableNode) {
+                String varName = ((VariableNode) node).getName();
+                if (!variables.containsKey(varName)) {
+                    throw new RuntimeException("Undefined variable: " + varName);
+                }
+        
+                Object value = variables.get(varName);
+                
+                
+                if (value instanceof FileHandlerr) {
+                    FileHandlerr fileHandler = (FileHandlerr) value;
+                    if (fileHandler.getReader() != null) {
+                        try {
+                            StringBuilder content = new StringBuilder();
+                            String line;
+                            while ((line = fileHandler.getReader().readLine()) != null) {
+                                content.append(line).append("\n"); // Append each line
+                            }
+                            return content.toString().trim();  // ✅ Return full file content
+                        } catch (IOException e) {
+                            throw new RuntimeException("Error reading file: " + e.getMessage());
+                        }
+                    }
+                }
+                return value; // Return normal variable value if not a file
+            }
             if (node instanceof ListNode) {
                 return interpretListNode((ListNode) node);
             }
@@ -283,14 +491,18 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
                 return interpretFunctionDefinitionNode((FunctionDefinitionNode) node);
             }
             if (node instanceof FunctionCallNode) {
-                return interpretFunctionCallNode((FunctionCallNode) node);
+                // return interpretFunctionCallNode((FunctionCallNode) node);
+                FunctionCallNode callNode = (FunctionCallNode) node;
+                if (callNode.getFunctionName().equals("write")) {
+                    return interpretWriteFunction(callNode);
+                }
+                return interpretFunctionCallNode(callNode);
+
             }
             if (node instanceof BooleanNode) {
                 return ((BooleanNode) node).getValue();
             } 
-            if (node instanceof ForLoopNode) {
-                return interpretForLoopNode((ForLoopNode) node);
-            } 
+            
             if (node instanceof PrintNode) {
                 return interpretPrintNode((PrintNode) node);
             } 
@@ -312,8 +524,9 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
             if (node instanceof StringNode) {
                 return ((StringNode) node).getValue();
             }
-            if (node instanceof ForLoopNode) {
-                return interpretForLoopNode((ForLoopNode) node);
+            if (node instanceof ForLoopNode){
+
+             return interpretForLoop((ForLoopNode) node);
             }
             else if (node instanceof ComparisonNode) {
                 return interpretComparisonNode((ComparisonNode) node);
@@ -378,7 +591,17 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
                         default: throw new RuntimeException("Unknown operator: " + operator);
                     }
                 }
+                if (leftValue instanceof String && rightValue instanceof String) {
+                    return ((String) leftValue) + ((String) rightValue);
+                }
             
+                // 🔹 Handle String + Number (convert number to string & concatenate)
+                if (leftValue instanceof String && rightValue instanceof Number) {
+                    return leftValue.toString() + rightValue.toString();
+                }
+                if (leftValue instanceof Number && rightValue instanceof String) {
+                    return leftValue.toString() + rightValue.toString();
+                }
                 throw new RuntimeException("Unsupported operation: " + operator);
             }
             
@@ -436,27 +659,26 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
             return result;
         }
     
-        private Object interpretForLoopNode(ForLoopNode node) {
-            interpretNode(node.getInitialization()); 
+        private Object interpretForLoop(ForLoopNode node) {
+            // ✅ Initialize the loop variable (e.g., let i : 0)
+            interpretNode(node.getInitialization());
         
             while (true) {
+                // ✅ Evaluate loop condition (e.g., i <= 10)
                 Object conditionValue = interpretNode(node.getCondition());
-        
-                
                 if (!(conditionValue instanceof Boolean)) {
-                    throw new RuntimeException("For loop condition must be Boolean, found: " + conditionValue.getClass());
+                    throw new RuntimeException("For loop condition must evaluate to a boolean.");
                 }
         
-                if (!(Boolean) conditionValue) {
-                    break; 
-                }
+                if (!(boolean) conditionValue) break; // ✅ Exit loop if condition is false
         
-                interpretBlockNode(node.getBody()); 
+                // ✅ Execute loop body
+                interpretBlockNode(node.getBody());
         
-                interpretNode(node.getUpdate()); 
+                // ✅ Apply increment (e.g., let i : i + 1)
+                interpretNode(node.getIncrement());
             }
-        
-            return null;
+            return null; // ✅ For loops do not return a value
         }
         
         private String processStringInterpolation(String text) {
@@ -652,3 +874,4 @@ private Object interpretCodeBlockNode(CodeBlockNode node) {
     
 
 }
+

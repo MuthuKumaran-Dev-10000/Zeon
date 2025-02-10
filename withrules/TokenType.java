@@ -52,5 +52,17 @@ JAVA_BLOCK,
 PYTHON_BLOCK , 
 SEND,  
 DOT,
-
+CLASS,
+THIS,
+NEW,
+TRY,        // try
+CATCH,      // catch
+FINALLY,    // finally
+WITH, 
+AS,       // 'with' keyword
+FILE_MODE,   // 'r', 'w', 'x' (file modes)
+WRITE,       // 'write' function
+SWITCH,      // switch
+    CASE,        // case
+    DEFAULT, 
 }

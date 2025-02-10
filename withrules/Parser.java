@@ -198,11 +198,229 @@ class Parser {
     
         return new CodeBlockNode(type, codeBlock.toString().trim(), sendVariable);
     }
+    private Node parseClassDeclaration() {
+        consume("class");
+        String className = consume(TokenType.IDENTIFIER).getValue();
+        consume("{");
     
+        List<VariableNode> properties = new ArrayList<>();
+        List<FunctionDefinitionNode> methods = new ArrayList<>();
+        FunctionDefinitionNode constructor = null;
+    
+        while (!match("}")) {
+            if (match("fn")) {
+                methods.add((FunctionDefinitionNode) parseFunctionDefinition());  // Add function as private method
+            } else if (match(TokenType.IDENTIFIER)) {
+                properties.add((VariableNode) parseVariableDeclaration());  // Class variables
+            } else if (match(className)) {  // Constructor (same as class name)
+                constructor = parseConstructor(className);
+            } else {
+                throw new RuntimeException("Unexpected token in class: " + peek());
+            }
+        }
+        consume("}");
+    
+        return new ClassNode(className, properties, constructor, methods);
+    }
+    private Node parseTryCatchStatement() {
+        // consume("try");
+        consume("{");
+        BlockNode tryBlock = new BlockNode(parseBlock());
+        // consume("}");
+    
+        String exceptionVariable = null;
+        BlockNode catchBlock = null;
+        if (match("catch")) {
+            // consume("catch");
+            consume("(");
+            exceptionVariable = consume(TokenType.IDENTIFIER).getValue();
+            consume(")");
+            consume("{");
+            catchBlock = new BlockNode(parseBlock());
+            // consume("}");
+        }
+    
+        BlockNode finallyBlock = null;
+        if (match("finally")) {
+            // consume("finally");
+            consume("{");
+            finallyBlock = new BlockNode(parseBlock());
+            // consume("}");
+        }
+    
+        return new TryCatchNode(tryBlock, exceptionVariable, catchBlock, finallyBlock);
+    }
+    
+    private FunctionDefinitionNode parseConstructor(String className) {
+        consume(className);  // Consume constructor name
+        consume("(");
+        List<String> params = parseParameterList();
+        consume(")");
+    
+        consume("{");
+        List<Node> body = parseBlock();
+        consume("}");
+    
+        return new FunctionDefinitionNode(className, params, new BlockNode(body));
+    }
+    private Node parseFileHandlingStatement() {
+        // consume("with");  // Ensure 'with' is present
+        consume("(");  // Opening bracket for parameters
+        
+        Node fileName = parseExpression();  // First parameter (filename)
+        consume(",");  // Ensure a comma is present
+    
+        // if (!match(TokenType.FILE_MODE)) {
+        //     throw new RuntimeException("Expected file mode (r, w, x) in file handling.");
+        // }
+    
+        String mode = consume(TokenType.FILE_MODE).getValue();
+        consume(")");  // Closing bracket
+        consume("as");  // Ensure 'as' is present
+    
+        String variableName = consume(TokenType.IDENTIFIER).getValue();  // File variable
+        consume("{");  // Opening brace for block
+    
+        List<Node> body = new ArrayList<>();
+        while (!match("}")) {
+            body.add(parseStatement());  // Parse file operations inside the block
+        }
+        // consume("}");  // Closing brace
+    
+        return new WithNode(fileName, mode, variableName, new BlockNode(body));
+    }
+    private Node parseSwitchStatement() {
+        // consume(TokenType.SWITCH);  // ✅ Consume `switch`
+        consume("(");
+        Node switchExpression = parseExpression();  // ✅ Parse switch variable/expression
+        consume(")");
+        consume("{");  // ✅ Opening `{` for switch block
+    
+        System.out.println("[DEBUG] Entered switch statement with value: " + switchExpression);
+    
+        List<CaseNode> cases = new ArrayList<>();
+        Node defaultCase = null;
+        int caseCount = 0;  // ✅ Counter for how many cases are processed
+        
+        while (position < tokens.size()) {  // ✅ Ensure within bounds
+            
+            if (position >= tokens.size()) {
+                throw new RuntimeException("Unexpected end of input inside switch-case.");
+            }
+    
+            if (match(TokenType.CASE)) {  // ✅ Handle `case`
+                // consume(TokenType.CASE); // ✅ Explicitly consume `case`
+    
+                if (position >= tokens.size()) {
+                    throw new RuntimeException("Unexpected end of input after `case`.");
+                }
+    
+                Node caseValue = parseExpression();
+                consume("{");  // ✅ Ensure `{` starts case body
+    
+                // System.out.println("[DEBUG] Entered case with value: " + caseValue);
+    
+                List<Node> caseBody = new ArrayList<>();
+                while (position < tokens.size() && !match("}")) {  
+                    caseBody.add(parseStatement());
+                    // if (match("}")) {
+                    //     System.out.println("Found } at case end");
+                    // }
+                }
+    
+                
+                // consume("}");  // ✅ Ensure case block closes
+    
+                // System.out.println("[DEBUG] Exited case with value: " + caseValue);
+                caseCount++; // ✅ Increase processed case count
+                cases.add(new CaseNode(caseValue, new BlockNode(caseBody)));
+            } 
+            else if (match(TokenType.DEFAULT)) {  // ✅ Handle `default`
+                // consume(TokenType.DEFAULT);  // ✅ Explicitly consume `default`
+                consume("{");
+    
+                // System.out.println("[DEBUG] Entered default case");
+    
+                List<Node> defaultBody = new ArrayList<>();
+                while (position < tokens.size() && !match("}")) {  
+                    defaultBody.add(parseStatement());
+                    if (match("}")) {
+                        // System.out.println("} found at default");
+                    }
+                }
+    
+                
+                // consume("}");  // ✅ Ensure default block closes
+    
+                // System.out.println("[DEBUG] Exited default case");
+                defaultCase = new BlockNode(defaultBody);
+            } 
+            
+            // else if (check(TokenType.DICT_CLOSE)) {  // ✅ Ensure switch closes properly
+            //     consume("}");  // ✅ NOW CONSUME `}`
+            //     System.out.println("[DEBUG] Exited switch statement. Processed " + caseCount + " cases.");
+            //     return new SwitchNode(switchExpression, cases, defaultCase);
+            // }
+            else {  
+                // throw new RuntimeException("Unexpected token in switch-case: " + tokens.get(position));
+                return new SwitchNode(switchExpression, cases, defaultCase);
+            }
+            
+        }
+        return new SwitchNode(switchExpression, cases, defaultCase);
+        
+        // throw new RuntimeException("Expected closing `}` for switch-case block.");  // 🔴 Final fallback error
+    }
+    
+    
+    
+    
+    
+    
+    private Node parseWithStatement() {
+        consume("(");
+        Node fileName = parseExpression(); // Parse "filename.txt"
+        consume(",");
+        Token modeToken = consume(TokenType.FILE_MODE); // Parse "r", "w", "x"
+        consume(")");
+        consume(TokenType.AS);
+        String variableName = consume(TokenType.IDENTIFIER).getValue(); // Variable f
+        consume("{");
+    
+        List<Node> body = new ArrayList<>();
+        while (!match("}")) {
+            body.add(parseStatement());
+        }
+        consume("}");
+    
+        return new WithNode(fileName, modeToken.getValue(), variableName, new BlockNode(body));
+    }
+    private Node parseWriteFunction() {
+        // consume("write");  // Ensure 'write' is detected
+        consume("(");
+        Node fileVariable = parseExpression();
+        consume(",");
+        Node content = parseExpression();
+        consume(")");
+        consume(";");
+    
+        return new WriteNode(fileVariable, content);
+    }
     
     private Node parseStatement() {
         if (match("type")) {
             return parseTypeStatement();
+        }
+        if (match("with")) {
+            return parseFileHandlingStatement();
+        }else if (match("write")) {
+            return parseWriteFunction();
+        }
+        if (match(TokenType.SWITCH)) {  // ✅ Add switch support here!
+            return parseSwitchStatement();
+        }
+        if (match("try")) {
+            return parseTryCatchStatement(); 
         }
         if (match(TokenType.JAVA_BLOCK)) {
             return new CodeBlockNode(TokenType.JAVA_BLOCK, tokens.get(position - 1).getValue(),null);
@@ -211,6 +429,9 @@ class Parser {
             return new CodeBlockNode(TokenType.PYTHON_BLOCK, tokens.get(position - 1).getValue(),null);
         }
         
+        if (match(TokenType.WITH)) {
+            return parseWithStatement();
+        }
         
         if (match("let")) {
             return parseVariableDeclaration();
@@ -290,38 +511,68 @@ class Parser {
     }
     
     private Node parseForLoop() {
-        
-        consume("("); 
+        consume("("); // ✅ Consume '('
     
-        
-        Node initialization = parseStatement(); 
-        
-        
-        if (!match(TokenType.IDENTIFIER) && !match(TokenType.NUMBER)) {  
-            throw new RuntimeException("Expected condition expression after initialization in for loop");
+        // ✅ Manually parse initialization: `let i : 0`
+        if (!match(TokenType.IDENTIFIER)) {
+            throw new RuntimeException("Expected 'let' keyword in for loop initialization.");
         }
-        System.out.println("Token past"+tokens.get(position-1));
-        System.out.println("Token curent"+tokens.get(position));
-        System.out.println("Token next"+tokens.get(position+1));
+        // consume(TokenType.IDENTIFIER); // `let`
+    
+        String varName = consume(TokenType.IDENTIFIER).getValue(); // `i`
+        consume(":");
+        Node initialValue = parseExpression(); // `0`
+    
+        VariableDeclarationNode initialization = new VariableDeclarationNode(varName, initialValue);
+    
+        if (!match(",")) {
+            throw new RuntimeException("Expected ',' after for loop initialization.");
+        }
+        // consume(",");
+    
+        // ✅ Parse condition: `i <= 10`
         Node condition = parseExpression();
-        
-        consume(";"); 
     
-        
-        Node update = parseStatement(); 
-        
-        consume(")"); 
-    
-        consume("{"); 
-    
-        List<Node> body = new ArrayList<>();
-        while (!match("}")) {
-            body.add(parseStatement());
+        if (!match(",")) {
+            throw new RuntimeException("Expected ',' after for loop condition.");
         }
-        consume("}"); 
+        // consume(",");
     
-        return new ForLoopNode(initialization, condition, update, new BlockNode(body));
+        // ✅ Manually parse increment: `let i : i + 1`
+        if (!match(TokenType.IDENTIFIER)) {
+            throw new RuntimeException("Expected 'let' keyword in for loop increment.");
+        }
+        // consume(TokenType.IDENTIFIER); // `let`
+    
+        String incVarName = consume(TokenType.IDENTIFIER).getValue(); // `i`
+        consume(":");
+        Node incrementValue = parseExpression(); // `i + 1`
+    
+        VariableDeclarationNode increment = new VariableDeclarationNode(incVarName, incrementValue);
+    
+        if (!match(")")) {
+            throw new RuntimeException("Expected ')' at end of for loop declaration.");
+        }
+        // consume(")");
+        
+        if (!match("{")) {
+            throw new RuntimeException("Expected '{' to start for loop body.");
+        }
+        // consume("{");
+        // System.out.println(tokens.get(position).getValue());
+        // ✅ Parse loop body as `BlockNode`
+        List<Node> bodyStatements = parseBlock();
+        BlockNode body = new BlockNode(bodyStatements);
+        // System.out.println(body);
+        
+        // if (!match("}")) {
+        //     throw new RuntimeException("Expected '}' to close for loop body.");
+        // }
+        // consume("}");
+    
+        return new ForLoopNode(initialization, condition, increment, body);
     }
+    
     
     
     
@@ -585,6 +836,25 @@ class Parser {
             return tokens.get(position++);
         }
         throw new RuntimeException("Expected token type: " + type + " but found: " + tokens.get(position));
+    }
+    private List<Node> parseBlock() {
+        List<Node> statements = new ArrayList<>();
+        while (!match("}")) {
+            statements.add(parseStatement());
+        }
+        // consume("}");
+        return statements;
+    }
+    
+    private List<String> parseParameterList() {
+        List<String> params = new ArrayList<>();
+        while (!match(")")) {
+            params.add(consume(TokenType.IDENTIFIER).getValue());
+            if (!match(")")) {
+                consume(","); // Consume comma
+            }
+        }
+        return params;
     }
     
 }
