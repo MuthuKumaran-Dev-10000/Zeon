@@ -1,0 +1,13 @@
+for(i : 0, i <= 100,let i : i + 1) {
+    print("Current Count: $i_n");
+
+}
+
+
+x : [1,2,3,4];
+c : ["mk","smk","dhruv","vel"];
+
+print(x);
+print(c);
+x : c;
+print(x);

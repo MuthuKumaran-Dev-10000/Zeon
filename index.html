@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeon Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function copyToClipboard() {
+            const codeBlock = document.getElementById("code-block");
+            navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
+        }
+    </script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-6">
+        <header class="text-center py-6">
+            <h1 class="text-4xl font-bold text-blue-400">Zeon Programming Language</h1>
+            <p class="text-gray-400 text-lg">A Modern, Lightweight, and Intuitive Programming Language</p>
+            <a href="zeon_setup.exe" download class="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-500">Download Zeon</a>
+        </header>
+        
+        <section class="mt-8 bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-blue-300">Syntax & Documentation</h2>
+            <p class="text-gray-400 mt-2">Below is the syntax guide for Zeon. Click the button to copy the code snippets.</p>
+            <button onclick="copyToClipboard()" class="mt-4 bg-green-600 px-4 py-2 rounded-lg hover:bg-green-500">Copy Code</button>
+            <pre id="code-block" class="bg-gray-700 p-4 rounded-lg mt-4 overflow-x-auto text-sm">
+<strong class="text-blue-400">Variable Declaration:</strong>
+let varname : value;
+
+<strong class="text-blue-400">Comments:</strong>
+?? comments here 
+
+<strong class="text-blue-400">List:</strong>
+let varname : [1,2,3,4];
+
+<strong class="text-blue-400">Dictionary:</strong>
+let varname : {key:val};
+
+<strong class="text-blue-400">Print Statement:</strong>
+print("values _escapesequence");
+print("value"*repeatation value);
+print("$val is here");
+
+<strong class="text-blue-400">Function Declaration:</strong>
+fn funcname (p1,p2,p3){
+    ?? statements here
+    return value;
+}
+
+<strong class="text-blue-400">Function Call:</strong>
+funcname(p1,p2,p3);
+
+<strong class="text-blue-400">Conditional Statements:</strong>
+if(condition){
+    ??statement here
+} elseif(condition){
+    ??statement here
+} else {
+    ??statement here
+}
+
+<strong class="text-blue-400">Looping Statements:</strong>
+while(condition){
+    ?? statements here
+    let var : var+1;
+}
+for(let i : 0, i <= 5, let i : i + 1) {
+    print(i+"_n");
+}
+
+<strong class="text-blue-400">Type Checking & Casting:</strong>
+type varname;
+string(value);
+int(value);
+list(value);
+
+<strong class="text-blue-400">Using Java/Python Code in Zeon:</strong>
+java `
+import java.util.*;
+Scanner sc = new Scanner(System.in);
+String name  = sc.nextLine();
+System.out.println("hi "+name);
+`
+
+python `
+n = input("hi enter your age : ")
+print("the user age is : "+n)
+`
+
+<strong class="text-blue-400">File Handling:</strong>
+with ("filename.txt", w) as VAR {
+    write(VAR, "Hello, Zeon!");
+    write(VAR, "This is a test.");
+}
+with ("filename.txt", r) as VAR {
+    print(VAR);
+}
+
+<strong class="text-blue-400">Exception Handling:</strong>
+try {
+    ??statements
+} catch(e) {
+    print(e);
+    print("_n");
+} finally {
+    print("This will always execute._n");
+}
+
+<strong class="text-blue-400">Switch Statement:</strong>
+let num : 2;
+switch(num) {
+    case 1 {
+        print("One");
+    }
+    case 2 {
+        print("Two");
+    }
+    case 3 {
+        print("Three");
+    }
+    default {
+        print("Not 1, 2, or 3");
+    }
+}
+            </pre>
+        </section>
+    </div>
+</body>
+</html>

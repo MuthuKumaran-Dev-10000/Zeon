@@ -1,0 +1,13 @@
+fn fibonacci(n) {
+    let a : 0;
+    let b : 1;
+    while (n > 0) {
+        print("$a ");
+        let temp : a;
+        let a : b;
+        let b : temp + b;
+        let n : n - 1;
+    }
+}
+
+fibonacci(10);

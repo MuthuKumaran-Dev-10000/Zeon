@@ -1,0 +1,11 @@
+let x : 10;
+let y : 2.5;
+type y;
+type x;
+print(x + y); 
+print("_n"); 
+print(x * y);
+print("_n");
+print("muthu " *3);
+let x : string(x);
+type x;

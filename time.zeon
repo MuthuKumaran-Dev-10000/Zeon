@@ -1,0 +1,10 @@
+j: 1;
+
+while (j <= 10) {
+    if (j % 2 == 1) {
+        print("Odd number:  $j_n");
+    }
+     j: j + 1;
+}
+
+print("Finished looping.");

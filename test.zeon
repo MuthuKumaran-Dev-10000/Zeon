@@ -1,0 +1,6 @@
+python `
+    s = input("Enter your name: ")
+    s = s + " says hi"
+    print(s)
+`
+

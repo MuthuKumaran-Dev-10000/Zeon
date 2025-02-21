@@ -1,0 +1,17 @@
+try {
+    print("trying to divide by zero 10 / 0");
+    print("_n"+"hi_n");
+    y: (10+5);
+    print(y);
+
+    let y : 10 / 0;  
+    print(y);
+} catch(e) {
+    print(e); 
+    print("_n");
+} finally {
+    print("This will always execute._n");
+}
+
+print("Zeon program completed. _n");
+

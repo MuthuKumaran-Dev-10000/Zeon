@@ -1,0 +1,4 @@
+print("Hello_tWorld");
+let a : 10;
+let b : 5;
+print("_nMuthu"*b);

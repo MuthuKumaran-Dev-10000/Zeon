@@ -1,0 +1,12 @@
+Web `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello Zeon</title>
+</head>
+<body>
+    <h1>Welcome to Zeon Language</h1>
+    <p>This is a sample webpage rendered using the Web block.</p>
+</body>
+</html>
+`

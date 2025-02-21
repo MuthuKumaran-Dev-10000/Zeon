@@ -1,0 +1,14 @@
+fn incrementCounter(count, limit) {
+    if (count == limit) {
+        return count;
+    }
+
+    let newCount : count + 1;
+    print("Current Count: $newCount_n");
+
+    incrementCounter(newCount, limit);
+}
+
+let startCount : 0;
+let limit : 100;
+incrementCounter(startCount, limit);

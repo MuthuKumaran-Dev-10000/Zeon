@@ -1,0 +1,28 @@
+let y : [1,2,3,4,5];
+print(y);
+fn greet(color,min,sec) {
+    
+    print("_n$color Hello, (min: $min,sec: $sec) Zeon!_n");
+    
+    ??this is comment
+
+    print("The value of min+sec is : ");
+    print(min+sec);
+    print("_n");
+    let i : min;
+    let j : sec;
+    while(min<=sec){
+        while(i<=j){
+            print(i);
+            print("_w");
+            let i : i+1;
+        }
+        print("_n");
+        let min : min+1;
+        let i : min;
+        let j : sec;
+    }
+}
+
+greet("_blue hi guys",1,5);
+greet("_red",1,8);
