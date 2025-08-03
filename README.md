@@ -1,3 +1,15 @@
+## 🌟 About Zeon
+
+**Zeon** is a **compact, efficient, and beginner-friendly programming language** designed for simplicity and power. Built with a focus on readability and developer productivity, Zeon combines the elegance of modern syntax with the flexibility to embed Java and Python code directly.
+
+🛠️ **Fully Open Source** and community-driven, Zeon is ideal for:
+
+- Rapid prototyping
+- Learning programming concepts
+- Lightweight applications
+- Embedding scripting in larger systems
+
+Whether you're a curious beginner or an experienced developer looking for a lightweight tool, **Zeon** is here to make coding intuitive and fun.
 
 # Zeon Programming Language Documentation
 
@@ -177,3 +189,4 @@ switch(num) {
     }
 }
 ```
+
